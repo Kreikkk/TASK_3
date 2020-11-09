@@ -220,9 +220,12 @@ def plot_significance(plot_set, var, metadata):
 		input()
 
 
-def error(S, B):
-	SErr = S**0.5
-	BErr = B**0.5
+def error(signal_events, bg_events):
+	S = np.sum(signal_events)
+	B = np.sum(bg_events)
+
+	SErr = np.sum(signal_events**2)**0.5
+	BErr = np.sum(bg_events**2)**0.5
 
 	SPart = (S + B)**(-0.5) - 0.5*S*((S + B)**(-1.5))
 	BPart = -0.5*S*((S + B)**(-1.5))
@@ -245,8 +248,8 @@ if __name__ == "__main__":
 			for var in item:
 				newset = main(var, newset)
 
-			signal_events = np.sum(np.array(newset[0]["weightModified"])**2)
-			bg_events = np.sum(np.array(newset[1]["weightModified"])**2)
+			signal_events = np.array(newset[0]["weightModified"])
+			bg_events = np.array(newset[1]["weightModified"])
 
 			print(error(signal_events, bg_events))
 			print("-"*50)
@@ -257,8 +260,8 @@ if __name__ == "__main__":
 		for var in variables:
 			newset = main(var, newset)
 
-		signal_events = np.sum(np.array(newset[0]["weightModified"])**2)
-		bg_events = np.sum(np.array(newset[1]["weightModified"])**2)
+		signal_events = np.array(newset[0]["weightModified"])
+		bg_events = np.array(newset[1]["weightModified"])
 
 		print(error(signal_events, bg_events))
 		print("-"*50)

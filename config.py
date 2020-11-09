@@ -15,4 +15,4 @@ STG = 	{"mJJ":			{"step":5, "sign":"+", "max": 2000},
 
 IGNORE_GRAPH_SHOW = True
 GRAPHING = False
-COMBINATIONS = "ALL"
+COMBINATIONS = ""
