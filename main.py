@@ -61,7 +61,7 @@ def main(var, dataset):
 	B = sum(dataset[1]["weightModified"])
 	info = (threshold, maximum, S, B)
 
-	if SHOW_GRAPHS:
+	if GRAPHING:
 		plot_significance((xPlot, yPlot), var, info)
 		plot_efficiency((xPlot, (SRatioPlot, BRatioPlot)), var)
 
@@ -107,7 +107,7 @@ def iterational_filter(var, dataset):
 
 		cursor += STG[var]["step"]
 
-	return xPlot, (yPlot, BRatioPlot, SRatioPlot)
+	return xPlot, (yPlot, SRatioPlot, BRatioPlot)
 
 def plot_efficiency(plot_set, var):
 	xPlot, yPlotSgn, yPlotBg = array("d"), array("d"), array("d")
@@ -122,20 +122,30 @@ def plot_efficiency(plot_set, var):
 	canvas = root.TCanvas("canvas", "CANVAS", 800, 800)
 
 	curve1 = root.TGraph(NDots, xPlot, yPlotSgn)	
-	curve1.SetLineColor(2)
+	curve1.SetLineColor(4)
 	curve1.SetLineWidth(3)
 	curve1.GetXaxis().SetTitle(var)
 	curve1.GetYaxis().SetTitle('Efficiency')
 	curve1.SetTitle("")
-	curve1.Draw()
 
 	curve2 = root.TGraph(NDots, xPlot, yPlotBg)
-	curve2.SetLineColor(4)
+	curve2.SetLineColor(2)
 	curve2.SetLineWidth(3)
 	curve2.GetXaxis().SetTitle(var)
 	curve2.GetYaxis().SetTitle('Efficiency')
 	curve2.SetTitle("")
+
+	ymax = round(max(max(yPlotSgn), max(yPlotBg)) + 0.1, 1)
+	ymin = round(min(min(yPlotSgn), min(yPlotBg)) - 0.1, 1)
+	if ymin < 0:
+		ymin = 0.
+
+	curve1.GetYaxis().SetRangeUser(ymin, ymax)
+	curve2.GetYaxis().SetRangeUser(ymin, ymax)
+
+	curve1.Draw()
 	curve2.Draw("SAME")
+
 
 	legend=root.TLegend(0.73, 0.84, 0.9, 0.9)
 	legend.AddEntry(curve1,"Signal")
@@ -145,8 +155,10 @@ def plot_efficiency(plot_set, var):
 	canvas.SetGrid()
 	canvas.Update()
 
-	input()
+	canvas.Print("eff_{}.png".format(var))
 
+	if not IGNORE_GRAPH_SHOW:
+		input()
 
 
 def get_response(var, threshold, dataset):
@@ -202,7 +214,10 @@ def plot_significance(plot_set, var, metadata):
 	canvas.SetGrid()
 	canvas.Update()
 
-	input()
+	canvas.Print("./sign_{}.png".format(var))
+
+	if not IGNORE_GRAPH_SHOW:
+		input()
 
 
 def error(S, B):
@@ -230,10 +245,11 @@ if __name__ == "__main__":
 			for var in item:
 				newset = main(var, newset)
 
-			bg_events = np.sum(newset[0]["weightModified"])
-			signal_events = np.sum(newset[1]["weightModified"])
+			signal_events = np.sum(np.array(newset[0]["weightModified"])**2)
+			bg_events = np.sum(np.array(newset[1]["weightModified"])**2)
 
 			print(error(signal_events, bg_events))
+			print("-"*50)
 
 	else:
 		newset = readfile()
@@ -241,11 +257,11 @@ if __name__ == "__main__":
 		for var in variables:
 			newset = main(var, newset)
 
-		bg_events = np.sum(newset[0]["weightModified"])
-		signal_events = np.sum(newset[1]["weightModified"])
+		signal_events = np.sum(np.array(newset[0]["weightModified"])**2)
+		bg_events = np.sum(np.array(newset[1]["weightModified"])**2)
 
 		print(error(signal_events, bg_events))
-	print("-"*50)
+		print("-"*50)
 
 
 

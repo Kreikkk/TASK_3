@@ -13,5 +13,6 @@ STG = 	{"mJJ":			{"step":5, "sign":"+", "max": 2000},
 		 "phCentrality":{"step":0.001, "sign":"-", "max": 1},
 		 "ptBalance":	{"step":0.002, "sign":"-", "max": 0.3}}
 
-SHOW_GRAPHS = True
-COMBINATIONS = ""
+IGNORE_GRAPH_SHOW = True
+GRAPHING = False
+COMBINATIONS = "ALL"
